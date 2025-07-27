@@ -59,21 +59,18 @@ public_users.get('/isbn/:isbn', async (req, res) => {
 
 // Get book details based on author
 public_users.get('/author/:author', (req, res) => {
-    const requestedAuthor = req.params.author.toLowerCase();
-    const booksByAuthor = [];
-    for (let key in books) {
-      if (books[key].author.toLowerCase() === requestedAuthor) {
-        booksByAuthor.push(books[key]);
-      }
-    }
-    if (booksByAuthor.length > 0) {
-      return res.status(200).json(booksByAuthor);
+    const requestedAuthor = req.params.author;
+    const requestedKeys = Object.values(books);
+    const authorDetails = requestedKeys.filter(book => book.author === requestedAuthor);
+    if (authorDetails.length > 0) {
+      return res.status(200).json(authorDetails);
     } else {
-      return res.status(404).json({ message: "Book not found!" });
+      return res.status(404).json({ message: "No books found by this author" });
     }
   });
+  
 //Routes to serve author for axios
-public_users.get('/author/:author', async (req, res) => {
+public_users.get('/async-author/:author', async (req, res) => {
     const author = req.params.author;
     try {
       const response = await axios.get(`http://localhost:5000/author/${author}`);
@@ -85,9 +82,9 @@ public_users.get('/author/:author', async (req, res) => {
 
 // Get all books based on title
 public_users.get('/title/:title', function (req, res) {
-    const title = req.params.title.toLowerCase();
-    const requestedTitle = Object.values(books);
-    const titleDetails = requestedTitle.filter(book => book.title.toLowerCase() === title);
+    const requestedTitle = req.params.title;
+    const requestedTitleKeys = Object.values(books);
+    const titleDetails = requestedTitleKeys.filter(book => book.title === requestedTitle);
   
     if (titleDetails.length > 0) {
       return res.status(200).json({titleDetails});
